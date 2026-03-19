@@ -59,6 +59,15 @@ $hotels = [
     <h1>Esercizio php-hotel</h1>
 
     <div class="container">
+        <h3>Personalizza la ricerca</h3>
+        <form action="./index.php">
+            <label for="">Hotel con parcheggio</label>
+            <input name="parking"
+                   value="true"
+                   type="checkbox">
+            <button type="submit">Applica filtri</button>
+        </form>
+        <hr>
         <table class="table">
             <thead>
                 <tr>
@@ -72,7 +81,26 @@ $hotels = [
 
             <tbody>
                 <?php
-                foreach ($hotels as $curHotel) {
+                $isParking = isset($_GET['parking']) ? (bool) $_GET['parking'] : false;
+
+
+                // echo "isParking: $isParking <br>";
+                
+                if ($isParking) {
+                    //echo "controllo !empty(isparking): " . !empty($isParking) . "[true]<br>";
+                    $filterdHotels = array_filter($hotels, function ($elem) use ($isParking) {
+                        return $elem["parking"] === $isParking;
+                    });
+                    //echo "var_dump(filterdHotels)[true]";
+                    //var_dump($filterdHotels);
+                } else {
+                    //echo "controllo !empty(isparking): " . !empty($isParking) . "[false]<br>";
+                    $filterdHotels = $hotels;
+                    //echo "var_dump(filterdHotels)[false]";
+                    //var_dump($filterdHotels);
+                }
+
+                foreach ($filterdHotels as $curHotel) {
                     echo "<tr>";
                     foreach ($curHotel as $key => $value) {
                         echo "<td>$value</td>";
