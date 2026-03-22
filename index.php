@@ -62,17 +62,19 @@ $hotels = [
         <!-- Filter section -->
         <section>
             <h3 class="flex">Personalizza la ricerca</h3>
-            <form action="./index.php">
+            <form action="">
                 <div>
-                    <label for="">Hotel con parcheggio</label>
+                    <label for="parking">Hotel con parcheggio</label>
                     <input name="parking"
                            value="true"
-                           type="checkbox">
+                           type="checkbox"
+                           id="parking">
                 </div>
                 <div>
-                    <label for=""> Voto:</label>
+                    <label for="vote"> Voto:</label>
                     <input type="number"
                            name="vote"
+                           id="vote"
                            min="1"
                            max="5">
                 </div>
@@ -81,6 +83,7 @@ $hotels = [
             <hr>
         </section>
 
+        <!-- Table section -->
         <section>
             <table class="table">
                 <thead>
@@ -94,35 +97,37 @@ $hotels = [
                 </thead>
                 <tbody>
                     <?php
-                    $filterdHotels = $hotels;
+                    $filtered_hotels = $hotels;
 
-                    $isParking = isset($_GET['parking']) ? (bool) $_GET['parking'] : false;
-                    // echo "isParking: $isParking <br>";
-                    if ($isParking) {
-                        //echo "controllo !empty(isparking): " . !empty($isParking) . "[true]<br>";
-                        $filterdHotels = array_filter($filterdHotels, function ($elem) use ($isParking) {
-                            return $elem["parking"] === $isParking;
+                    $is_parking_requested = isset($_GET['parking']) && $_GET['parking'] === 'true' ? true : false;
+                    // echo "isParking: $is_parking_requested <br>";
+                    if ($is_parking_requested) {
+                        //echo "controllo !empty(isparking): " . !empty($is_parking_requested) . "[true]<br>";
+                        $filtered_hotels = array_filter($filtered_hotels, function ($elem) use ($is_parking_requested) {
+                            return $elem["parking"] === $is_parking_requested;
                         });
                         //echo "var_dump(filterdHotels)[true]";
-                        //var_dump($filterdHotels);
+                        //var_dump($filtered_hotels);
                     }
 
-                    $vote = isset($_GET['vote']) ? (int) $_GET['vote'] : 0;
-                    //echo "vote: $vote <br>";
-                    if ($vote > 0) {
+                    $min_vote = isset($_GET['vote']) ? (int) $_GET['vote'] : 0;
+                    //echo "vote: $min_vote <br>";
+                    if ($min_vote > 0) {
 
-                        $filterdHotels = array_filter($filterdHotels, function ($elem) use ($vote) {
-                            return $elem["vote"] >= $vote;
+                        $filtered_hotels = array_filter($filtered_hotels, function ($elem) use ($min_vote) {
+                            return $elem["vote"] >= $min_vote;
                         });
                         //echo "var_dump(filterdHotels)[true]";
-                        //var_dump($filterdHotels);
+                        //var_dump($filtered_hotels);
                     }
 
-
-
-                    foreach ($filterdHotels as $curHotel) {
+                    foreach ($filtered_hotels as $curHotel) {
                         echo "<tr>";
                         foreach ($curHotel as $key => $value) {
+                            if ($key === "parking") {
+                                $value = $value ? "Si" : "No";
+                            }
+
                             echo "<td>$value</td>";
                         }
                         echo "</tr>";
